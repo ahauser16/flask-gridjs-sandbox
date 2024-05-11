@@ -24,7 +24,11 @@
           { id: 'phone', name: 'Phone Number', sort: false },
           { id: 'email', name: 'Email' },
         ],
+        // the ajax_table is different from the basic_table in that it uses the `server` option (instead of the `data` option) which moves the data to a separate endpoint and is invoked after the page is displayed with an empty table. 
+
+        // this is more efficient for large datasets because the page is displayed quickly and the data is fetched in the background.  The basic_table fetches the data before the page is displayed, which can cause a delay in rendering the page.  The inefficiency is due to the fact that the data is fetched and processed before the page is displayed, which can take a long time for large datasets.
         server: {
+          //The `url` option is the endpoint that the data is fetched from, and the `then` option is a function that processes the data before it is displayed in the table. In this case, the data is an array of objects, so the `then` function is just `results => results.data`.
           url: '/api/data',
           then: results => results.data,
         },

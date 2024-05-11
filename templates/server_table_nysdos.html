@@ -1,0 +1,283 @@
+<!-- server_table_nysdos.html -->
+<html>
+  <head>
+    <title>Server-Driven Table with NYSDOS data</title>
+    <link
+      href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/f2f5cb6c0f.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <div><i class="fa-brands fa-linkedin"></i></div> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <style>
+      /* .myTable {
+      }
+      .myTableCell {
+      }
+      .myTableHeader {
+      } */
+      .myTableCell:first-child,
+      .myTableCell:nth-child(2) {
+        border: none;
+        border-collapse: collapse;
+        margin: 0.125rem;
+        padding: 0.125rem 0.125rem 0.125rem 0.5rem;
+      }
+
+      .myTableCell:nth-child(3) {
+        border-left: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Server-Driven Table with NYSDOS data</h1>
+      <button id="fetch-data-button">Fetch Data</button>
+      <hr />
+      <div id="table"></div>
+    </div>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script>
+      const updateUrl = (prev, query) => {
+        return (
+          prev +
+          (prev.indexOf("?") >= 0 ? "&" : "?") +
+          new URLSearchParams(query).toString()
+        );
+      };
+      new gridjs.Grid({
+        columns: [
+          {
+            name: "",
+            sort: false,
+            width: "1%",
+            formatter: (cell, row) => {
+              return gridjs.h(
+                "button",
+                {
+                  onClick: () =>
+                    alert(
+                      `You have added "${row.cells[2].data}" to your favorites list!`
+                    ),
+                },
+                "Add"
+              );
+            },
+          },
+          {
+            name: "",
+            sort: false,
+            width: "1%",
+            formatter: (cell, row) => {
+              return gridjs.h(
+                "button",
+                {
+                  onClick: () =>
+                    alert(`You have sent a message to "${row.cells[2].data}"!`),
+                },
+                "Msg"
+              );
+            },
+          },
+          {
+            id: "commission_holder_name",
+            name: "Commission Holder Name",
+            formatter: (cell, row) => {
+              let emoji = "";
+              if (row.cells[5].data === "traditional") {
+                emoji = "📝";
+              } else if (row.cells[5].data === "electronic") {
+                emoji = "💻";
+              }
+              return gridjs.html(
+                `<div style="display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); border: 1px solid red">
+              <div style="grid-column: 1 / span 4; grid-row: 1; border: 1px solid blue; align-self: center; font-size: 1.25rem; padding-left: .25rem"><b>${cell}</b></div>
+              <div style="grid-column: 1 / span 4; grid-row: 2; padding-left: .25rem">⭐⭐⭐⭐⭐</div>
+              <div style="grid-column: 1 / span 5; grid-row: 3; padding-left: .25rem">💬  <em>English, Spanish</em></div>
+              <div style="grid-column: 1 / span 5; grid-row: 4; padding-left: .25rem">📞  Zoom, Google Meet</div>
+              <div style="grid-column: 1 / span 5; grid-row: 5; padding-left: .25rem">${emoji}  <b>${row.cells[5].data}</b></div>
+              <div style="grid-column: 1 / span 5; grid-row: 6; padding-left: .25rem">📍  ${row.cells[4].data}</div>
+            </div>`
+              );
+            },
+          },
+          { id: "commission_number_uid", name: "Commission Number (UID)" },
+          { id: "commissioned_county", name: "Commissioned County" },
+          {
+            id: "commission_type_traditional_or_electronic",
+            name: "Commission Type",
+            hidden: true,
+            // name: gridjs.html(
+            //   '<div><div>Commission Type</div><div><input type="radio" /></div></div>'
+            // ),
+          },
+          {
+            id: "term_issue_date",
+            name: "Issued",
+            formatter: (cell) => {
+              const date = new Date(cell);
+              return `${
+                date.getMonth() + 1
+              }/${date.getDate()}/${date.getFullYear()}`;
+            },
+          },
+          {
+            id: "term_expiration_date",
+            name: "Expires",
+            formatter: (cell) => {
+              const date = new Date(cell);
+              return `${
+                date.getMonth() + 1
+              }/${date.getDate()}/${date.getFullYear()}`;
+            },
+          },
+          {
+            id: "formatted_business_address",
+            name: "Business Address",
+            formatter: (cell, row) => {
+              let formattedHtml = "";
+              if (row.cells[9].data) {
+                formattedHtml += `${row.cells[9].data}<br>`;
+              }
+              if (row.cells[10].data) {
+                formattedHtml += `${row.cells[10].data}<br>`;
+              }
+              if (row.cells[11].data) {
+                formattedHtml += `${row.cells[11].data}<br>`;
+              }
+              if (
+                row.cells[12].data &&
+                row.cells[13].data &&
+                row.cells[14].data
+              ) {
+                formattedHtml += `${row.cells[12].data}, ${row.cells[13].data} ${row.cells[14].data}<br>`;
+              }
+              return gridjs.html(formattedHtml);
+            },
+          },
+          {
+            id: "business_name_if_available",
+            name: "Business Name",
+            hidden: true,
+          },
+          {
+            id: "business_address_1_if_available",
+            name: "Business Address 1",
+            hidden: true,
+          },
+          {
+            id: "business_address_2_if_available",
+            name: "Business Address 2",
+            hidden: true,
+          },
+          {
+            id: "business_city_if_available",
+            name: "Business City",
+            hidden: true,
+          },
+          {
+            id: "business_state_if_available",
+            name: "Business State",
+            hidden: true,
+          },
+          {
+            id: "business_zip_if_available",
+            name: "Business Zip",
+            hidden: true,
+          },
+          { id: "georeference", name: "Georeference", hidden: true },
+        ],
+        server: {
+          url: "/api/data",
+          then: (results) => results.data,
+          total: (results) => results.total,
+        },
+        search: {
+          enabled: true,
+          server: {
+            url: (prev, search) => {
+              return updateUrl(prev, { search });
+            },
+          },
+        },
+        sort: {
+          enabled: true,
+          multiColumn: true,
+          server: {
+            url: (prev, columns) => {
+              const columnIds = [
+                "commission_holder_name",
+                "commission_number_uid",
+                "commissioned_county",
+                "commission_type_traditional_or_electronic",
+                "term_issue_date",
+                "term_expiration_date",
+                "business_name_if_available",
+                "business_address_1_if_available",
+                "business_address_2_if_available",
+                "business_city_if_available",
+                "business_state_if_available",
+                "business_zip_if_available",
+              ];
+              const sort = columns.map(
+                (col) =>
+                  (col.direction === 1 ? "+" : "-") + columnIds[col.index]
+              );
+              return updateUrl(prev, { sort });
+            },
+          },
+        },
+        pagination: {
+          enabled: true,
+          server: {
+            url: (prev, page, limit) => {
+              return updateUrl(prev, { start: page * limit, length: limit });
+            },
+          },
+        },
+        className: {
+          table: "myTable",
+          td: "myTableCell",
+          th: "myTableHeader",
+        },
+        style: {
+          container: {
+            // width: "100%",
+            // height: "100%",
+            // maxWidth: "1200px",
+            // maxHeight: "1200px",
+          },
+          table: {
+            border: "3px solid #ccc",
+          },
+          th: {
+            "background-color": "rgba(0, 0, 0, 0.1)",
+            color: "#000",
+            "border-bottom": "3px solid #ccc",
+            "text-align": "left",
+          },
+          td: {
+            "text-align": "left",
+          },
+        },
+        // width: "100%",
+        // height: "100%",
+      }).render(document.getElementById("table"));
+    </script>
+    <script>
+      $("#fetch-data-button").click(function () {
+        $.post("/fetch_data")
+          .done(function (data) {
+            console.log("Data fetched successfully!");
+            console.log(data);
+          })
+          .fail(function (xhr, status, error) {
+            console.error("Error fetching data: " + status + " " + error);
+          });
+      });
+    </script>
+  </body>
+</html>

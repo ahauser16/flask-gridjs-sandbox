@@ -16,6 +16,7 @@
       <div id="table"></div>
     </div>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <!-- The `Grid` object is initialized with the `columns` and `data` options. Each column is configured with an `id` and a `name`, which is the text that appears in the column header. The `data` object is an array where each row is an object, in which the value for each column is provided under a key matching the column `id` value. I've used Jinja templating expressions to generate this array in a way that is valid JavaScript code that the browser can parse. -->
     <script>
       new gridjs.Grid({
         columns: [
@@ -36,12 +37,20 @@
             },
           {% endfor %}
         ],
+        // GridJS option that adds a search box
+        // https://gridjs.io/docs/config/search
         search: {
           selector: (cell, rowIndex, cellIndex) => [0, 1, 4].includes(cellIndex) ? cell : null,
         },
+        // GridJS option that adds sort buttons to each column header
+        // https://gridjs.io/docs/config/sort
         sort: true,
+        // GridJS option that adds pagination buttons at the bottom of the table
+        // https://gridjs.io/docs/config/pagination
         pagination: true,
       }).render(document.getElementById('table'));
     </script>
   </body>
 </html>
+
+<!-- For additional customization, these three options can be set to an object with more options instead of true. The documentation and examples should give you a good idea of what options are available. -->

@@ -30,6 +30,7 @@
             return gridjs.html('<a href="mailto:' + cell + '">' + cell + '</a>');
           }},
         ],
+        // this server_table approach also uses a `server` section, but the `search`, `sort` and `pagination` sections are expanded into objects, all having their own `server` sub-section. In this mode, Grid.js will build the URL that requests data by calling the `server.url` functions in the three sections. This URL is expected to return only the rows that need to be shown, considering the current settings for search, sort and pagination.
         server: {
           url: '/api/data',
           then: results => results.data,

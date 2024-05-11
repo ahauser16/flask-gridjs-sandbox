@@ -6,7 +6,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
@@ -25,14 +24,11 @@ class User(db.Model):
             'email': self.email
         }
 
-
 db.create_all()
-
 
 @app.route('/')
 def index():
     return render_template('server_table.html')
-
 
 @app.route('/api/data')
 def data():
